@@ -6,8 +6,10 @@ services:
       ORACLE_SID: management
       ORACLE_PDB: managementpdb
       ORACLE_PWD: Master2023
+    networks:
+      - my_network
     ports:
-      - 8090:1521
+      - 7090:1521
     volumes:
       - servermanagement-data:/opt/oracle/oradata
       - servermanagement-backup:/opt/oracle/backup
@@ -17,7 +19,7 @@ services:
           "CMD",
           "sqlplus",
           "-L",
-          "system/Master2023@//localhost:8090/management as sysdba",
+          "system/Master2023@//localhost:7090/management as sysdba",
           "@healthcheck.sql"
         ]
       interval: 30s
@@ -25,13 +27,15 @@ services:
       retries: 5
   serverpatients:
     image: container-registry.oracle.com/database/enterprise:latest
+    networks:
+      - my_network
     environment:
       ORACLE_MEMORY: 2GB
       ORACLE_SID: patients
       ORACLE_PDB: patientspdb
       ORACLE_PWD: Master2023
     ports:
-      - 8091:1521
+      - 7091:1521
     volumes:
       - serverpatients-data:/opt/oracle/oradata
       - serverpatients-backup:/opt/oracle/backup
@@ -41,12 +45,15 @@ services:
           "CMD",
           "sqlplus",
           "-L",
-          "system/Master2023@//localhost:8091/patients as sysdba",
+          "system/Master2023@//localhost:7091/patients as sysdba",
           "@healthcheck.sql"
         ]
       interval: 30s
       timeout: 10s
       retries: 5
+networks:
+  my_network:
+    driver: bridge
 
 volumes:
   servermanagement-data:

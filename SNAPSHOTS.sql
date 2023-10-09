@@ -1,0 +1,5 @@
+CREATE MATERIALIZED VIEW staff
+REFRESH FAST
+START WITH SYSDATE
+NEXT SYSDATE + 1/24 -- every hour
+AS SELECT * FROM patients@remote_patients;
