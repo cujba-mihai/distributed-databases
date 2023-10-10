@@ -1,29 +1,57 @@
+const Databases = {
+  PATIENTS: 'patients',
+  MANAGEMENT: 'management'
+}
+
+const common = {
+  type: 'oracle',
+  host: 'localhost',
+  username: 'c##mihai',
+  password: 'Master2023',
+  synchronize: true,
+  logging: true,
+}
+
+const patientsConfig = {
+  name: Databases.PATIENTS,
+  port: 7091,
+  serviceName: Databases.PATIENTS,
+  service: Databases.PATIENTS,
+}
+
+const managementConfig = {
+  name: Databases.MANAGEMENT,
+  port: 7090,
+  serviceName: Databases.MANAGEMENT,
+  service: Databases.MANAGEMENT,
+}
+
+managementConfig.connectionString = createConnectionString({
+  host: managementConfig.host,
+  port: managementConfig.port,
+  service: managementConfig.service
+});
+
+patientsConfig.connectionString = createConnectionString({
+  host: patientsConfig.host,
+  port: patientsConfig.port,
+  service: patientsConfig.service
+});
+
 const createConfig = exports.createConfig = () => {
+
   const config = {
+    patientsDb: {
+      ...common,
+      ...patientsConfig
+    },
     managementDb: {
-      name: 'management',
-      type: 'oracle',
-      host: 'localhost',
-      port: 7090,
-      serviceName: 'management',
-      username: 'system',
-      password: 'Master2023',
-      synchronize: true,
-      logging: true,
-      service: 'management',
-      entities: [__dirname + '/typeorm/entities/*.entity{.ts,.js}'],
-      migrations: [__dirname + '/typeorm/migrations/management/**/*{.ts,.js}'],
-      cli: {
-        entitiesDir: './typeorm/entities/',
-      },
+      ...common,
+      ...managementConfig
     }
   };
 
-  config.managementDb.connectionString = createConnectionString({
-    host: config.managementDb.host,
-    port: config.managementDb.port,
-    service: config.managementDb.service
-  });
+
 
   return config;
 };

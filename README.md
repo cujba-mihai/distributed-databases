@@ -257,3 +257,17 @@ This should resolve the `ORA-12526` issue, allowing for successful connections.
 5. **Password**: `Master2023`
 6. **Test Connection**: Ensure everything is set up correctly.
 7. **Finish**: Save the connection.
+
+![Alt text](./assets/data-integrity.png)
+
+In Oracle triggers, the `:NEW` and `:OLD` pseudo-records are used to access the new and old values of the row's columns that are being inserted, updated, or deleted. In the case of an `INSERT` operation, `:NEW` will hold the new values being inserted into the row.
+
+When you run the query:
+
+```sql
+INSERT INTO c##mihai.Patient (id, name, age, staff_id) VALUES (0, 'Randy Hudson', 56, 60);
+```
+
+The value for `:NEW.staff_id` in the trigger will be `60`, which is the value you are inserting for the `staff_id` column. The trigger will then use this value to look up the `staff` table to see if a staff member with `id = 60` exists.
+
+If a staff member with `id = 60` exists, `count_staff` will be set to `1` and the insert operation will proceed. Otherwise, the trigger will raise an application error stating that a referential integrity violation has occurred.
