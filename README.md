@@ -33,6 +33,22 @@ This documentation serves both as a guide and a report on setting up distributed
       - [Medical Record Table](#medical-record-table)
       - [Foreign Key References](#foreign-key-references-1)
   - [ER Diagram](#er-diagram)
+  - [Database Link Creation Documentation](#database-link-creation-documentation)
+    - [Overview](#overview)
+    - [1. Creating Database Links](#1-creating-database-links)
+      - [Creating a Database Link Named 'patients'](#creating-a-database-link-named-patients)
+      - [Creating a Database Link Named 'management'](#creating-a-database-link-named-management)
+    - [2. Understanding Database Link Parameters](#2-understanding-database-link-parameters)
+    - [3. Testing Database Links](#3-testing-database-links)
+      - [DBLink query result example](#dblink-query-result-example)
+  - [Creating Synonyms](#creating-synonyms)
+  - [1. Creating Synonyms](#1-creating-synonyms)
+    - [Creating a Synonym for the 'Patient' Table](#creating-a-synonym-for-the-patient-table)
+    - [Creating Synonyms for 'Department' and 'Staff' Tables](#creating-synonyms-for-department-and-staff-tables)
+  - [2. Usage of Synonyms](#2-usage-of-synonyms)
+    - [Querying the 'Patient' Table Using the 'patient' Synonym](#querying-the-patient-table-using-the-patient-synonym)
+    - [Querying the 'Staff' Table Using the 'staff' Synonym](#querying-the-staff-table-using-the-staff-synonym)
+  - [3. Benefits of Synonyms](#3-benefits-of-synonyms)
   - [Creating Materialized Views](#creating-materialized-views)
     - [Procedure](#procedure)
   - [Understanding the Process](#understanding-the-process)
@@ -373,6 +389,136 @@ Ref: Patient.staff_id > Staff.id // many-to-one
 ## ER Diagram
 
 ![ER Diagram](./assets/er-diagram.png)
+
+## Database Link Creation Documentation
+
+This documentation explains the process of creating database links in an Oracle database. Database links enable communication and access to remote databases, making it possible to query and manipulate data across different database instances.
+
+### Overview
+
+In this guide, we will cover:
+
+1. Creating Database Links
+2. Understanding Database Link Parameters
+3. Testing Database Links
+
+### 1. Creating Database Links
+
+Database links are created using the `CREATE DATABASE LINK` statement in Oracle. Below are examples of creating two database links, 'patients' and 'management,' connecting to remote databases.
+
+#### Creating a Database Link Named 'patients'
+
+```sql
+CREATE DATABASE LINK patients
+CONNECT TO system IDENTIFIED BY Master2023
+USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=serverpatients)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=patients)))';
+```
+
+- `patients`: Name of the database link.
+- `system`: Username to connect to the remote database.
+- `Master2023`: Password for the username.
+- `serverpatients`: Hostname of the remote database server.
+- `1521`: Port number for the database listener.
+- `patients`: Service name or SID of the remote database.
+
+#### Creating a Database Link Named 'management'
+
+```sql
+CREATE DATABASE LINK management
+CONNECT TO system IDENTIFIED BY Master2023
+USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=servermanagement)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=management)))';
+```
+
+- `management`: Name of the database link.
+- `system`: Username to connect to the remote database.
+- `Master2023`: Password for the username.
+- `servermanagement`: Hostname of the remote database server.
+- `1521`: Port number for the database listener.
+- `management`: Service name or SID of the remote database.
+
+### 2. Understanding Database Link Parameters
+
+- **Name**: Choose a unique name for the database link to identify it within your local database.
+
+- **CONNECT TO**: Specify the username to use for connecting to the remote database. Ensure that this user has the necessary privileges.
+
+- **IDENTIFIED BY**: Provide the password for the specified username. Be cautious with password security.
+
+- **USING**: Use the `USING` clause to define the connection details to the remote database. This includes the hostname (HOST), port (PORT), and service name (or SID) of the remote database.
+
+### 3. Testing Database Links
+
+Once you've created database links, you can test their connectivity by running queries that involve tables or objects in the remote database. For example:
+
+```sql
+-- Querying to view all existing database links from the DBA_DB_LINKS view
+SELECT * FROM DBA_DB_LINKS;
+```
+
+#### DBLink query result example
+
+![Alt text](./assets/created-db-links.png)
+
+## Creating Synonyms
+
+In Oracle Database, a synonym is an alias or alternative name for an object, such as a table, view, sequence, or another synonym. Synonyms simplify database access and security by providing a consistent, user-friendly way to reference database objects, especially when those objects are located in different schemas or databases.
+
+## 1. Creating Synonyms
+
+To create a synonym in Oracle Database, you use the `CREATE SYNONYM` statement. Below are examples of creating synonyms for tables located in different databases.
+
+### Creating a Synonym for the 'Patient' Table
+
+```sql
+-- Create a synonym in the Management database for the 'Patient' table in the Patients database
+CREATE SYNONYM patient FOR c##mihai.PATIENT@patients;
+```
+
+- `patient`: The name of the synonym.
+- `c##mihai.PATIENT@patients`: The fully qualified name of the target object, including the schema and database link.
+
+### Creating Synonyms for 'Department' and 'Staff' Tables
+
+```sql
+-- Create a synonym in the Patients database for the 'Department' table in the Management database
+CREATE SYNONYM department FOR c##mihai.DEPARTMENT@management;
+
+-- Create a synonym in the Patients database for the 'Staff' table in the Management database
+CREATE SYNONYM staff FOR c##mihai.STAFF@management;
+```
+
+- `department` and `staff`: The names of the synonyms.
+- `c##mihai.DEPARTMENT@management` and `c##mihai.STAFF@management`: The fully qualified names of the target objects, including the schema and database link.
+
+## 2. Usage of Synonyms
+
+Once synonyms are created, they can be used in SQL statements just like the original objects they represent. Below are examples of using synonyms in SQL queries:
+
+### Querying the 'Patient' Table Using the 'patient' Synonym
+
+```sql
+-- Query the 'Patient' table using the 'patient' synonym
+SELECT * FROM patient;
+```
+
+### Querying the 'Staff' Table Using the 'staff' Synonym
+
+```sql
+-- Query the 'Staff' table using the 'staff' synonym
+SELECT * FROM staff;
+```
+
+## 3. Benefits of Synonyms
+
+- **Simplified Access**: Synonyms provide a user-friendly way to access database objects without specifying the full object name.
+
+- **Improved Security**: Synonyms can be used to control access to underlying objects and provide an additional layer of security.
+
+- **Flexibility**: If the location or structure of the underlying object changes, you can update the synonym's definition without affecting application code.
+
+- **Schema Abstraction**: Synonyms allow you to abstract the schema details of objects, making it easier to switch between schemas or databases.
+
+- **Reduced Maintenance**: Synonyms simplify maintenance when database objects are moved or renamed.
 
 ## Creating Materialized Views
 
