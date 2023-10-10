@@ -21,6 +21,17 @@ This documentation serves both as a guide and a report on setting up distributed
       - [Steps](#steps)
       - [Connect to the Management Database](#connect-to-the-management-database)
       - [Connect to the Patients Database](#connect-to-the-patients-database)
+    - [Data Integrity](#data-integrity)
+  - [Database Schema](#database-schema)
+    - [Management DB](#management-db)
+      - [Department Table](#department-table)
+      - [Staff Table](#staff-table)
+      - [**Foreign Key References**](#foreign-key-references)
+    - [Patients DB](#patients-db)
+      - [Patient Table](#patient-table)
+      - [Medical Record Table](#medical-record-table)
+      - [Foreign Key References](#foreign-key-references-1)
+  - [ER Diagram](#er-diagram)
 
 ---
 
@@ -258,7 +269,7 @@ This should resolve the `ORA-12526` issue, allowing for successful connections.
 6. **Test Connection**: Ensure everything is set up correctly.
 7. **Finish**: Save the connection.
 
-![Alt text](./assets/data-integrity.png)
+### Data Integrity
 
 In Oracle triggers, the `:NEW` and `:OLD` pseudo-records are used to access the new and old values of the row's columns that are being inserted, updated, or deleted. In the case of an `INSERT` operation, `:NEW` will hold the new values being inserted into the row.
 
@@ -271,3 +282,75 @@ INSERT INTO c##mihai.Patient (id, name, age, staff_id) VALUES (0, 'Randy Hudson'
 The value for `:NEW.staff_id` in the trigger will be `60`, which is the value you are inserting for the `staff_id` column. The trigger will then use this value to look up the `staff` table to see if a staff member with `id = 60` exists.
 
 If a staff member with `id = 60` exists, `count_staff` will be set to `1` and the insert operation will proceed. Otherwise, the trigger will raise an application error stating that a referential integrity violation has occurred.
+
+![Alt text](./assets/data-integrity.png)
+
+[Link to data integrity SQL Example](./oracle-sql/data-integrity/CheckStaffId.sql)
+
+## Database Schema
+
+### Management DB
+
+#### Department Table
+
+```dbml
+Table Department {
+  id integer [primary key]
+  name varchar [not null]
+  budget integer
+}
+```
+
+#### Staff Table
+
+```dbml
+Table Staff {
+  id integer [primary key]
+  name varchar [not null]
+  role varchar
+  department_id integer
+}
+```
+
+#### **Foreign Key References**
+
+  ```dbml
+  Ref: Staff.department_id > Department.id // many-to-one
+  ```
+
+---
+
+### Patients DB
+
+#### Patient Table
+
+```dbml
+Table Patient {
+  id integer [primary key]
+  name varchar [not null]
+  age integer
+  staff_id integer
+}
+```
+
+#### Medical Record Table
+
+```dbml
+Table MedicalRecord {
+  id integer [primary key]
+  patient_id integer [not null]
+  diagnosis varchar
+  treatment varchar
+}
+```
+
+#### Foreign Key References
+
+```dbml
+Ref: MedicalRecord.patient_id > Patient.id // many-to-one
+Ref: Patient.staff_id > Staff.id // many-to-one
+```
+
+## ER Diagram
+
+![ER Diagram](./assets/er-diagram.png)

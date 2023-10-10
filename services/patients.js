@@ -6,7 +6,7 @@ exports.getPatients = async (req, res) => {
     const { patientsDb } = await getDatabaseConnection();
     
     // Assuming you have a query builder or ORM
-    const query = await getSQLQuery('SelectAllPatients');
+    const getAllPatientsQuery = await getSQLQuery('SelectAllPatients');
 
     try {
       const dbLink = await getSQLQuery('Link', 'links/patients')
@@ -15,14 +15,14 @@ exports.getPatients = async (req, res) => {
     } catch (err) {
       console.error(err)
     }
-    const result = await patientsDb.query(query);
+    const result = await patientsDb.query(getAllPatientsQuery);
 
     res.json({
       success: true,
       data: result,
     });
 
-    
+
   } catch (err) {
     console.error('Failed to retrieve patients:', err);
     res.status(500).json({
