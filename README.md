@@ -171,21 +171,21 @@ If you encounter the error `ORA-12526, TNS:listener: all appropriate instances a
      sudo docker exec -it distributed-databases-serverpatients-1 bash
      ```
 
-3. **Connect to SQL*Plus**
+2. **Connect to SQL*Plus**
    - Use SQL*Plus to connect to the database as an admin:
 
      ```bash
      sqlplus / as sysdba
      ```
 
-4. **Check Instance Status**
+3. **Check Instance Status**
    - Run the following SQL query to check the status:
 
      ```sql
      SELECT INSTANCE_NAME, STATUS FROM V$INSTANCE;
      ```
 
-5. **Startup the Database**
+4. **Startup the Database**
    - If the instance is down, start it up:
 
      ```sql
@@ -198,14 +198,14 @@ If you encounter the error `ORA-12526, TNS:listener: all appropriate instances a
      ALTER SYSTEM DISABLE RESTRICTED SESSION;
      ```
 
-6. **Exit SQL Plus**
+5. **Exit SQL Plus**
    - To exit SQL*Plus, type:
 
      ```sql
      EXIT;
      ```
 
-7. **Restart the Listener**
+6. **Restart the Listener**
    - To apply changes, restart the listener:
 
      ```bash
@@ -213,10 +213,10 @@ If you encounter the error `ORA-12526, TNS:listener: all appropriate instances a
      lsnrctl start
      ```
 
-8. **Check Listener Status**
+7. **Check Listener Status**
    - Run `lsnrctl status` to ensure that the instance is now unrestricted.
 
-9. **Test the Connection**
+8. **Test the Connection**
    - Use your client tool, such as DBeaver, to test the connection.
 
 This should resolve the `ORA-12526` issue, allowing for successful connections.
