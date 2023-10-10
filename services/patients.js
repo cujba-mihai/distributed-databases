@@ -1,4 +1,4 @@
-const {  getSQLQuery } = require('../getSQLQuery')
+const {  getSQLQuery } = require('../utils/getSQLQuery')
 const { getDatabaseConnection } = require('../db');
 
 exports.getPatients = async (req, res) => {
