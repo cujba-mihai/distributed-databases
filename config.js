@@ -1,4 +1,4 @@
-export const createConfig = () => {
+const createConfig = exports.createConfig = () => {
   const config = {
     managementDb: {
       name: 'management',
@@ -11,12 +11,10 @@ export const createConfig = () => {
       synchronize: true,
       logging: true,
       service: 'management',
-      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-      migrations: [__dirname + '/migrations/management/**/*{.ts,.js}'],
+      entities: [__dirname + '/typeorm/entities/*.entity{.ts,.js}'],
+      migrations: [__dirname + '/typeorm/migrations/management/**/*{.ts,.js}'],
       cli: {
-        entitiesDir: 'src',
-        migrationsDir: 'src/database/management/migrations',
-        subscribersDir: 'subscriber',
+        entitiesDir: './typeorm/entities/',
       },
     }
   };
@@ -30,7 +28,7 @@ export const createConfig = () => {
   return config;
 };
 
-export const config = createConfig();
+exports.config = createConfig();
 
 
 function createConnectionString({ host, port, service }) {

@@ -15,6 +15,7 @@ This documentation serves both as a guide and a report on setting up distributed
     - [Docker Images Building](#docker-images-building)
     - [Access Databases Outside of Docker Container](#access-databases-outside-of-docker-container)
       - [Pre-requisites](#pre-requisites)
+  - [Install Oracle Client Library on Ubuntu](#install-oracle-client-library-on-ubuntu)
   - [Resolve Connection Issues](#resolve-connection-issues)
     - [Dealing with `ORA-12526` Errors: Database in Restricted Mode](#dealing-with-ora-12526-errors-database-in-restricted-mode)
       - [Steps](#steps)
@@ -103,6 +104,47 @@ In this guide, we'll use **DBeaver** as an example to demonstrate how to connect
 #### Pre-requisites
 
 - Two running containers: one for the management database listening on port 7090, and another for the patients database listening on port 7091 (as configured in your `docker-compose` file).
+
+## Install Oracle Client Library on Ubuntu
+
+You must have 64-bit Oracle Client libraries configured with ldconfig, or in LD_LIBRARY_PATH.
+If you do not have Oracle Database on this computer, then install the Instant Client Basic or Basic Light package from
+<https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html>
+
+1. **Download Instant Client Zip File**:
+  Download `instantclient-basic-linux.x64-21.11.0.0.0dbru.zip` from the [Oracle website](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html).
+
+2. **Unzip the File**:
+  Extract the contents of the zip file into a directory of your choice. For example, you might create a directory called `/opt/oracle/` and unzip the package there:
+
+    ```bash
+    mkdir -p /opt/oracle
+    unzip instantclient-basic-linux.x64-21.11.0.0.0dbru.zip -d /opt/oracle
+    ```
+
+3. Install Libaio1
+
+    ```shell
+    sudo apt-get update
+    sudo apt-get install libaio1 libaio-dev
+    ```
+
+4. **Environment Variables**:
+  Add the client library to the `LD_LIBRARY_PATH`:
+
+    ```bash
+    export LD_LIBRARY_PATH=/opt/oracle/instantclient_21_11:$LD_LIBRARY_PATH
+    ```
+
+    It's often beneficial to put this line in your `.bashrc`, `.zshrc`, or `.profile` file to make it permanent.
+
+5. **Create Symbolic Links**:
+  Some applications may expect to find shared libraries in `/usr/lib`, so you might need to create symbolic links:
+
+    ```bash
+    sudo ln -s /opt/oracle/instantclient_21_11/libclntsh.so.21.1 /usr/lib/libclntsh.so
+    sudo ln -s /opt/oracle/instantclient_21_11/libocci.so.21.1 /usr/lib/libocci.so
+    ```
 
 ## Resolve Connection Issues
 

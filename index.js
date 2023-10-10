@@ -1,9 +1,11 @@
 const express = require('express')
 const app = express();
 const cors = require('cors');
+const { getDatabaseConnection } = require('./db');
 
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/', async (req, res) => {
+    getDatabaseConnection()
     res.send('Hello world')
 })
 
