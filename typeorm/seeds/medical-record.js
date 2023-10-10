@@ -1,6 +1,16 @@
 const { faker } = require('@faker-js/faker');
 
 exports.seedMedicalRecord = async (patientsDb) => {
+
+  // Check how many medical records already exist
+  const medicalRecordsCountResult = await patientsDb.manager.query('SELECT COUNT(*) as count FROM c##mihai.MedicalRecord');
+  const medicalRecordsCount = medicalRecordsCountResult[0].COUNT;
+
+  if (medicalRecordsCount > 0) {
+    console.log("Records already exist in Medical Records table. Skipping insertion.");  
+    return;
+  }
+
   // Number of records you want to seed
   const numberOfRecords = 100;
 

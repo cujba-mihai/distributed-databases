@@ -6,7 +6,7 @@ const Databases = {
 const common = {
   type: 'oracle',
   host: 'localhost',
-  username: 'c##mihai',
+  username: 'system',
   password: 'Master2023',
   synchronize: true,
   logging: true,

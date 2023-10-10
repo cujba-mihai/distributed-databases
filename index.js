@@ -7,7 +7,7 @@ const { departmentSeed } = require('./typeorm/seeds/department')
 const { seedStaff } = require('./typeorm/seeds/staff')
 const { seedPatients } = require('./typeorm/seeds/patient')
 const { seedMedicalRecord }  = require('./typeorm/seeds/medical-record')
-
+const { getPatients } = require('./services/patients')
 
 const initializeDatabaseAndSeeds = async () => {
     try {
@@ -19,7 +19,7 @@ const initializeDatabaseAndSeeds = async () => {
         await seedStaff(managementDb);
         await seedPatients({ managementDb, patientsDb });
         await seedMedicalRecord(patientsDb)
-        
+
         console.log('Seeding successful');
     } catch (error) {
         console.error('Seeding failed:', error);
@@ -33,11 +33,10 @@ const initializeDatabaseAndSeeds = async () => {
 
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/', async (req, res) => {
-
-
-
     res.send('Hello world')
 })
+
+app.get('/patients', getPatients)
 
 // Enable Cross-Origin Resource Sharing (CORS)
 app.use(cors());
