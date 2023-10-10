@@ -2,6 +2,11 @@
 
 This documentation serves both as a guide and a report on setting up distributed databases using OracleDB within Docker containers. It aims to provide a step-by-step walkthrough for building the containers, establishing connections, and handling authentication, thereby aiding in the effective deployment and management of distributed Oracle databases.
 
+____
+
+Pentru versiunea romana faceti click [aici](./README_RO.MD)
+____
+
 ## Table of Contents
 
 - [Distributed Databases Using OracleDB](#distributed-databases-using-oracledb)
@@ -61,7 +66,7 @@ This documentation serves both as a guide and a report on setting up distributed
     - [Showcasing the fact that the view has been succesfully created](#showcasing-the-fact-that-the-view-has-been-succesfully-created)
   - [UI showing the data from both databases](#ui-showing-the-data-from-both-databases)
 
----
+____
 
 ## Build Docker Containers with OracleDB
 
@@ -83,7 +88,7 @@ Error response from daemon: unauthorized: authentication required
 
 If you encounter the above error, it's likely because you need to authenticate. Follow the steps in the next section for guidance.
 
----
+____
 
 ## Authenticating on Container Registry
 
@@ -106,7 +111,7 @@ If you encounter the above error, it's likely because you need to authenticate. 
 
 8. You should see the message **"Login Succeeded"**.
 
----
+____
 
 ## Authenticate to Docker
 
@@ -120,7 +125,7 @@ If you encounter the above error, it's likely because you need to authenticate. 
 3. Log in using your Docker Hub credentials.
 4. You should see the message **"Login Succeeded"**.
 
----
+____
 
 ## Compose the Docker Containers
 
@@ -271,7 +276,7 @@ This should resolve the `ORA-12526` issue, allowing for successful connections.
 3. **Select Oracle Database**
    [Select Oracle Database Image](./assets/dbeaver-oracle-db.png)
 
----
+____
 
 #### Connect to the Management Database
 
@@ -284,7 +289,7 @@ This should resolve the `ORA-12526` issue, allowing for successful connections.
 6. **Test Connection**: Ensure everything is set up correctly.
 7. **Finish**: Save the connection.
 
----
+____
 
 #### Connect to the Patients Database
 
@@ -358,7 +363,7 @@ Table Staff {
   Ref: Staff.department_id > Department.id // many-to-one
   ```
 
----
+____
 
 ### Patients DB
 
@@ -643,4 +648,4 @@ WHERE SUBSTR(diagnosis, 1, 1) BETWEEN 'N' AND 'Z';
 
 ![Result Table](./assets/result-table.png)
 
----
+____
