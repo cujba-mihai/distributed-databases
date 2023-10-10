@@ -21,6 +21,7 @@ This documentation serves both as a guide and a report on setting up distributed
       - [Steps](#steps)
       - [Connect to the Management Database](#connect-to-the-management-database)
       - [Connect to the Patients Database](#connect-to-the-patients-database)
+  - [Order of setup](#order-of-setup)
     - [Data Integrity](#data-integrity)
   - [Database Schema](#database-schema)
     - [Management DB](#management-db)
@@ -32,6 +33,8 @@ This documentation serves both as a guide and a report on setting up distributed
       - [Medical Record Table](#medical-record-table)
       - [Foreign Key References](#foreign-key-references-1)
   - [ER Diagram](#er-diagram)
+  - [Create Snapshots](#create-snapshots)
+    - [Materialized views](#materialized-views)
 
 ---
 
@@ -269,6 +272,18 @@ This should resolve the `ORA-12526` issue, allowing for successful connections.
 6. **Test Connection**: Ensure everything is set up correctly.
 7. **Finish**: Save the connection.
 
+## Order of setup
+
+1. [Create user](./oracle-sql/create-user/)
+2. [Create links](./oracle-sql/links/)
+3. [Create synonyms](./oracle-sql/synonyms/)
+4. [Run each migration](./oracle-sql/migrations/)
+   1. [Department](./oracle-sql/migrations/management/Department.sql)
+   2. [Staff](./oracle-sql/migrations/management/Staff.sql)
+   3. [Patients](./oracle-sql/migrations/patients/Patient.sql)
+   4. [Medical Record](./oracle-sql/migrations/patients/MedicalRecord.sql)
+5. [Create materialized views](./oracle-sql/materialized-views/)
+
 ### Data Integrity
 
 In Oracle triggers, the `:NEW` and `:OLD` pseudo-records are used to access the new and old values of the row's columns that are being inserted, updated, or deleted. In the case of an `INSERT` operation, `:NEW` will hold the new values being inserted into the row.
@@ -354,3 +369,10 @@ Ref: Patient.staff_id > Staff.id // many-to-one
 ## ER Diagram
 
 ![ER Diagram](./assets/er-diagram.png)
+
+## Create Snapshots
+
+### Materialized views
+
+![Alt text](./assets/create-staff-view.png)
+![Alt text](./assets/created-staff-view.png)

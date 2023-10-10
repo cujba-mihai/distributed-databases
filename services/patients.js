@@ -15,6 +15,7 @@ exports.getPatients = async (req, res) => {
     } catch (err) {
       console.error(err)
     }
+    
     const result = await patientsDb.query(getAllPatientsQuery);
 
     res.json({
