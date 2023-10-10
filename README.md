@@ -53,6 +53,11 @@ This documentation serves both as a guide and a report on setting up distributed
     - [Procedure](#procedure)
   - [Understanding the Process](#understanding-the-process)
     - [Refresh Methods](#refresh-methods)
+  - [Partitioning](#partitioning)
+    - [Horizontal Partitioning with OracleDB](#horizontal-partitioning-with-oracledb)
+      - [SQL for Populating `Department_Partitioned`](#sql-for-populating-department_partitioned)
+      - [Query for Budget-Based Partition Count](#query-for-budget-based-partition-count)
+    - [View-Based Partitioning for Medical Records](#view-based-partitioning-for-medical-records)
     - [Showcasing the fact that the view has been succesfully created](#showcasing-the-fact-that-the-view-has-been-succesfully-created)
   - [UI showing the data from both databases](#ui-showing-the-data-from-both-databases)
 
@@ -570,6 +575,65 @@ The process of creating materialized views involves defining the data you want t
 - `FORCE`: Chooses either FAST or COMPLETE refresh based on what is possible. If FAST refresh is possible, it is used; otherwise, COMPLETE refresh is performed.
 
 ![Create Staff View](./assets/create-staff-view.png)
+
+## Partitioning
+
+Department table by its budget and partitioning medical records through database views. The former employs horizontal partitioning using OracleDB's built-in PARTITION BY RANGE syntax, while the latter utilizes view-based partitioning for medical records based on the initial letter of the diagnosis. These techniques provide efficient ways to manage and query large datasets, aiding in data organization, performance optimization, and resource allocation.
+
+### Horizontal Partitioning with OracleDB
+
+The `Department_Partitioned` table is partitioned based on the budget range.
+
+```sql
+CREATE TABLE c##mihai.Department_Partitioned (
+    id NUMBER PRIMARY KEY,
+    name VARCHAR2(50) NOT NULL,
+    budget NUMBER
+)
+PARTITION BY RANGE (budget) (
+    PARTITION Dept_LowBudget VALUES LESS THAN (10000),
+    PARTITION Dept_MediumBudget VALUES LESS THAN (50000),
+    PARTITION Dept_HighBudget VALUES LESS THAN (MAXVALUE)
+);
+```
+
+![Alt text](./assets/deptbudgetview.png)
+
+#### SQL for Populating `Department_Partitioned`
+
+If you have an existing `Department` table and wish to populate the partitioned table, execute the following SQL:
+
+```sql
+INSERT INTO c##mihai.Department_Partitioned (id, name, budget)
+SELECT id, name, budget FROM c##mihai.Department;
+```
+
+#### Query for Budget-Based Partition Count
+
+The following query can be used to count the records within each budget partition:
+
+```sql
+SELECT 'LowBudget' as BudgetGroup, COUNT(*) FROM c##mihai.Department_Partitioned WHERE budget < 10000
+UNION ALL
+SELECT 'MediumBudget' as BudgetGroup, COUNT(*) FROM c##mihai.Department_Partitioned WHERE budget BETWEEN 10000 AND 49999
+UNION ALL
+SELECT 'HighBudget' as BudgetGroup, COUNT(*) FROM c##mihai.Department_Partitioned WHERE budget >= 50000;
+```
+
+![Alt text](./assets/sql-result-get-budget-partitions.png)
+
+### View-Based Partitioning for Medical Records
+
+```sql
+CREATE VIEW MedicalRecordView AS
+SELECT * FROM c##mihai.MedicalRecord
+WHERE SUBSTR(diagnosis, 1, 1) BETWEEN 'A' AND 'M'
+UNION ALL
+SELECT * FROM c##mihai.MedicalRecord
+WHERE SUBSTR(diagnosis, 1, 1) BETWEEN 'N' AND 'Z';
+```
+
+![Alt text](./assets/MedicalRecordView.png)
 
 ### Showcasing the fact that the view has been succesfully created
 
