@@ -15,6 +15,8 @@ This documentation serves both as a guide and a report on setting up distributed
     - [Docker Images Building](#docker-images-building)
     - [Access Databases Outside of Docker Container](#access-databases-outside-of-docker-container)
       - [Pre-requisites](#pre-requisites)
+  - [Resolve Connection Issues](#resolve-connection-issues)
+    - [Dealing with `ORA-12526` Errors: Database in Restricted Mode](#dealing-with-ora-12526-errors-database-in-restricted-mode)
       - [Steps](#steps)
       - [Connect to the Management Database](#connect-to-the-management-database)
       - [Connect to the Patients Database](#connect-to-the-patients-database)
@@ -101,6 +103,81 @@ In this guide, we'll use **DBeaver** as an example to demonstrate how to connect
 #### Pre-requisites
 
 - Two running containers: one for the management database listening on port 7090, and another for the patients database listening on port 7091 (as configured in your `docker-compose` file).
+
+## Resolve Connection Issues
+
+### Dealing with `ORA-12526` Errors: Database in Restricted Mode
+
+If you encounter the error `ORA-12526, TNS:listener: all appropriate instances are in restricted mode`, it means that the Oracle database instance you're trying to connect to is in `RESTRICTED` mode. Follow the steps below to disable this mode:
+
+1. **Connect to the Docker Container**
+   - Execute the following command to connect to the Docker container where your Oracle instance is running:
+
+     ```bash
+     sudo docker exec -it <container_name> bash
+     ```
+
+     For example, to connect to the `distributed-databases-servermanagement-1` container, run:
+
+     ```bash
+     sudo docker exec -it distributed-databases-servermanagement-1 bash
+     ```
+
+     Similarly, to connect to the `distributed-databases-serverpatients-1` container, execute:
+
+     ```bash
+     sudo docker exec -it distributed-databases-serverpatients-1 bash
+     ```
+
+3. **Connect to SQL*Plus**
+   - Use SQL*Plus to connect to the database as an admin:
+
+     ```bash
+     sqlplus / as sysdba
+     ```
+
+4. **Check Instance Status**
+   - Run the following SQL query to check the status:
+
+     ```sql
+     SELECT INSTANCE_NAME, STATUS FROM V$INSTANCE;
+     ```
+
+5. **Startup the Database**
+   - If the instance is down, start it up:
+
+     ```sql
+     STARTUP
+     ```
+
+   - If the database is in restricted mode, disable it:
+
+     ```sql
+     ALTER SYSTEM DISABLE RESTRICTED SESSION;
+     ```
+
+6. **Exit SQL Plus**
+   - To exit SQL*Plus, type:
+
+     ```sql
+     EXIT;
+     ```
+
+7. **Restart the Listener**
+   - To apply changes, restart the listener:
+
+     ```bash
+     lsnrctl stop
+     lsnrctl start
+     ```
+
+8. **Check Listener Status**
+   - Run `lsnrctl status` to ensure that the instance is now unrestricted.
+
+9. **Test the Connection**
+   - Use your client tool, such as DBeaver, to test the connection.
+
+This should resolve the `ORA-12526` issue, allowing for successful connections.
 
 #### Steps
 

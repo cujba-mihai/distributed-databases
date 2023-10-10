@@ -2,11 +2,8 @@ const express = require('express')
 const app = express();
 const cors = require('cors');
 
-// const { DbConnection } = require('./db-connection');
-
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/', async (req, res) => {
-    // const citusVersion = await DbConnection()
     res.send('Hello world')
 })
 
