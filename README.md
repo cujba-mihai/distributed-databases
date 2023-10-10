@@ -33,8 +33,12 @@ This documentation serves both as a guide and a report on setting up distributed
       - [Medical Record Table](#medical-record-table)
       - [Foreign Key References](#foreign-key-references-1)
   - [ER Diagram](#er-diagram)
-  - [Create Snapshots](#create-snapshots)
-    - [Materialized views](#materialized-views)
+  - [Creating Materialized Views](#creating-materialized-views)
+    - [Procedure](#procedure)
+  - [2. Understanding the Process](#2-understanding-the-process)
+    - [Refresh Methods](#refresh-methods)
+    - [Showcasing the fact that the view has been succesfully created](#showcasing-the-fact-that-the-view-has-been-succesfully-created)
+  - [UI showing the data from both databases](#ui-showing-the-data-from-both-databases)
 
 ---
 
@@ -370,9 +374,63 @@ Ref: Patient.staff_id > Staff.id // many-to-one
 
 ![ER Diagram](./assets/er-diagram.png)
 
-## Create Snapshots
+## Creating Materialized Views
 
-### Materialized views
+Materialized views in Oracle databases are a form of snapshots that store the result set of a query as a physical table. These views are useful for improving query performance and data retrieval.
 
-![Alt text](./assets/create-staff-view.png)
-![Alt text](./assets/created-staff-view.png)
+### Procedure
+
+1. **Create a Materialized View Log (Optional)**
+
+   A materialized view log is a table associated with the base table of the materialized view. It keeps track of changes in the base table, allowing for fast refreshes of the materialized view.
+
+   ```sql
+   CREATE MATERIALIZED VIEW LOG ON base_table
+   WITH ROWID, PRIMARY KEY, SEQUENCE (columns);
+   ```
+
+   Replace `base_table` with the name of your base table and specify the columns you want to track changes for.
+
+2. **Create the Materialized View**
+
+   Create the materialized view using the `CREATE MATERIALIZED VIEW` statement. This statement includes the query that defines the data to be stored in the materialized view.
+
+   ```sql
+   CREATE MATERIALIZED VIEW materialized_view_name
+   REFRESH [FAST|COMPLETE|FORCE]
+   START WITH start_date
+   NEXT start_date + interval
+   AS
+   SELECT * FROM source_table@remote_database;
+   ```
+
+   - `materialized_view_name`: Name of the materialized view.
+   - `REFRESH`: Specify the refresh method (FAST, COMPLETE, or FORCE).
+   - `START WITH` and `NEXT`: Define the refresh schedule.
+   - `AS`: The query that retrieves data from the source table, which can be in a remote database.
+
+3. **Refresh the Materialized View**
+
+   Depending on the refresh method chosen, the materialized view will be automatically refreshed based on the defined schedule. You can also manually refresh it using the `DBMS_MVIEW` package.
+
+## 2. Understanding the Process
+
+The process of creating materialized views involves defining the data you want to store, specifying the refresh method, and scheduling the refreshes. Materialized views are particularly useful for storing aggregated data or data from remote databases.
+
+### Refresh Methods
+
+- `FAST`: Updates the materialized view with changes made to the base tables. Requires a materialized view log on the base table.
+- `COMPLETE`: Rebuilds the entire materialized view from scratch.
+- `FORCE`: Chooses either FAST or COMPLETE refresh based on what is possible. If FAST refresh is possible, it is used; otherwise, COMPLETE refresh is performed.
+
+![Create Staff View](./assets/create-staff-view.png)
+
+### Showcasing the fact that the view has been succesfully created
+
+![Created Staff View](./assets/created-staff-view.png)
+
+## UI showing the data from both databases
+
+![Result Table](./assets/result-table.png)
+
+---
