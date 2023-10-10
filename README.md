@@ -35,7 +35,7 @@ This documentation serves both as a guide and a report on setting up distributed
   - [ER Diagram](#er-diagram)
   - [Creating Materialized Views](#creating-materialized-views)
     - [Procedure](#procedure)
-  - [2. Understanding the Process](#2-understanding-the-process)
+  - [Understanding the Process](#understanding-the-process)
     - [Refresh Methods](#refresh-methods)
     - [Showcasing the fact that the view has been succesfully created](#showcasing-the-fact-that-the-view-has-been-succesfully-created)
   - [UI showing the data from both databases](#ui-showing-the-data-from-both-databases)
@@ -413,7 +413,7 @@ Materialized views in Oracle databases are a form of snapshots that store the re
 
    Depending on the refresh method chosen, the materialized view will be automatically refreshed based on the defined schedule. You can also manually refresh it using the `DBMS_MVIEW` package.
 
-## 2. Understanding the Process
+## Understanding the Process
 
 The process of creating materialized views involves defining the data you want to store, specifying the refresh method, and scheduling the refreshes. Materialized views are particularly useful for storing aggregated data or data from remote databases.
 
