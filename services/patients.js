@@ -1,6 +1,6 @@
 const {  getSQLQuery } = require('../utils/getSQLQuery')
 const { getDatabaseConnection } = require('../db');
-
+const { generateTable } = require('../utils/generateTable')
 exports.getPatients = async (req, res) => {
   try {
     const { patientsDb } = await getDatabaseConnection();
@@ -18,11 +18,9 @@ exports.getPatients = async (req, res) => {
     
     const result = await patientsDb.query(getAllPatientsQuery);
 
-    res.json({
-      success: true,
-      data: result,
-    });
+    const htmlTable = generateTable(result);
 
+    res.send(htmlTable);
 
   } catch (err) {
     console.error('Failed to retrieve patients:', err);
