@@ -3,6 +3,6 @@ CREATE TABLE c##mihai.Patient (
     id NUMBER PRIMARY KEY,
     name VARCHAR2(50) NOT NULL,
     age NUMBER,
-    staff_id NUMBER,
-    FOREIGN KEY (staff_id) REFERENCES c##mihai.Staff(id)
+    doctor_id NUMBER,
+    FOREIGN KEY (doctor_id) REFERENCES c##mihai.Doctors(doctor_id)
 );
